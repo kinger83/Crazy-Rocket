@@ -9,6 +9,9 @@ public class Rocket : MonoBehaviour
     Rigidbody rigidBody;
     AudioSource audioSource;
 
+    [SerializeField] float rotationMultiplier;
+    [SerializeField] float thrustMultiplier;
+
 	// Use this for initialization
 	void Awake()
     {
@@ -28,7 +31,7 @@ public class Rocket : MonoBehaviour
         bool thrust = CrossPlatformInputManager.GetButton("Thrust");
         if (thrust)
         {
-            rigidBody.AddRelativeForce(Vector3.up);
+            rigidBody.AddRelativeForce(Vector3.up * thrustMultiplier);
             if (!audioSource.isPlaying)
             {
                 audioSource.Play();
@@ -48,14 +51,19 @@ public class Rocket : MonoBehaviour
     private void ProcessRotation()
     {
         float xThrow = CrossPlatformInputManager.GetAxis("Horizontal");
+        float rotationPerFrame = rotationMultiplier * Time.deltaTime;
+        rigidBody.freezeRotation = true;
         if (xThrow < 0)
         {
+            transform.Rotate(Vector3.forward * rotationPerFrame);
             print(" Rotating Left, " + xThrow);
         }
         else if(xThrow > 0)
         {
+            transform.Rotate(-Vector3.forward * rotationPerFrame);
             print("Rotating Right, " + xThrow);
         }
+        rigidBody.freezeRotation = false;
         
     }
 }
